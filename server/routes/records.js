@@ -27,3 +27,56 @@ router.get("/:id", async (requestAnimationFrame, res) => {
   if (!result) res.send("Not found").status(404);
   else res.send(result).status(200);
 });
+
+//This section will help you create a new record.
+router.post("/", async (req, res) => {
+  try {
+    let newDocument = {
+      name: req.body.name,
+      position: req.body.position,
+      level: req.body.level,
+    };
+    let collection = await db.collection("records");
+    let result = collection.insertOne(newDocument);
+    res.send(result).status(204);
+  } catch (err) {
+    console.errors(err);
+    res.status(500).send("Error adding record");
+  }
+});
+
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const updates = {
+      $set:{
+        name: req.body.name,
+        position: req.body.position,
+        level: req.body.position,
+      },
+    };
+
+    let collection = await db.collection("records");
+    let result = await collection.updateOne(query, updates);
+    res.send(result).status(200);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error updating record");
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const query = { _id: new ObjectId(req.params.id) };
+
+    const collectoin = db.collection("records");
+    let result = await collection.deleteOne(query);
+
+    res.send(result).status(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error deleting record")
+  }
+});
+
+export default router;
